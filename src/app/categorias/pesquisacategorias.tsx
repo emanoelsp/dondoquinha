@@ -32,7 +32,7 @@ export default function CategoriesAndSearch() {
   return (
     <section className="px-4 md:px-16 pb-10 mx-auto max-w-7xl">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold mb-4 text-pink-600">Categorias</h2>
+        <h2 className="text-4xl font-bold mb-4 text-pink-600">Acessórios</h2>
         <div className="flex items-center justify-center">
           <hr className="w-16 md:w-60 border-2 border-pink-600" />
           <span className="mx-4 text-4xl md:text-6xl">🎀</span>

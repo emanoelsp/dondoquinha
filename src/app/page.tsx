@@ -1,9 +1,7 @@
 "use client"
 
 import Image from 'next/image'
-import { Truck, ShieldCheck, CreditCard, Star, User } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { Search } from "lucide-react"
 import Destaques from './produtos/destaques'
 import Outlet from './produtos/outlet'
 import Categorias from './categorias/pesquisacategorias'

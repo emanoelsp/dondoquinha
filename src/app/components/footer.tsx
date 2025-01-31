@@ -48,7 +48,11 @@ export default function Footer() {
       <div className="bg-pink-600 py-4">
         <div className="container mx-auto text-center">
           © 2023 Sua Empresa. Todos os direitos reservados.
-        </div>
+     <br />
+            <Link href="/terms" className="hover:underline">Termos de Uso</Link>
+            <Link href="/privacy" className="hover:underline">Política de Privacidade</Link>
+            <Link href="/cookies" className="hover:underline">Política de Cookies</Link>
+          </div>
       </div>
     </footer>
   )
