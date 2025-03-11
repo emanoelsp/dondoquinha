@@ -14,8 +14,8 @@ interface Product {
 
 export default function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([
-    { id: 1, name: 'Product 1', description: 'Description 1', costPrice: 10, sellingPrice: 20, images: ['/placeholder.svg'] },
-    { id: 2, name: 'Product 2', description: 'Description 2', costPrice: 15, sellingPrice: 30, images: ['/placeholder.svg'] },
+    { id: 1, name: 'Product 1', description: 'Description 1', costPrice: 10, sellingPrice: 20, images: [] },
+    { id: 2, name: 'Product 2', description: 'Description 2', costPrice: 15, sellingPrice: 30, images: [] },
   ])
 
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>({

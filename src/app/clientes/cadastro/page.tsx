@@ -1,117 +1,161 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { handleCpfVerify } from "../utilitarios/validacpf";
-import { handleCepVerify } from "../utilitarios/verificacep";
-import { PersonalInfoForm } from "./infosPessoal";
-import { PasswordForm } from "./infosSenha";
-import { AddressForm } from "./infosEndereco";
-import { formSchema, type FormSchema } from "../utilitarios/validacampos";
-import { isValidEmail, isCepData } from "../utilitarios/mascaras";
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
+import { auth, db } from "../../../firebase/config"
+import { handleCpfVerify } from "../utilitarios/validacpf"
+import { handleCepVerify } from "../utilitarios/verificacep"
+import { formSchema, type FormSchema } from "../utilitarios/validacampos"
+import { isValidEmail, isCepData } from "../utilitarios/mascaras"
+import { PersonalInfoForm } from "./infosPessoal"
+import { PasswordForm } from "./infosSenha"
+import { AddressForm } from "./infosEndereco"
 
 export default function CustomerRegistration() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-  const [cpfMessageClass, setCpfMessageClass] = useState("");
-  const [cepMessageClass, setCepMessageClass] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [passwordMatch, setPasswordMatch] = useState(true);
-  const [emailValid, setEmailValid] = useState(true);
-  const [emailMessage, setEmailMessage] = useState("");
-  const [passwordMatchMessage, setPasswordMatchMessage] = useState("");
-  const [isCpfInvalid, setIsCpfInvalid] = useState(false);
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState("")
+  const [cpfMessageClass, setCpfMessageClass] = useState("")
+  const [cepMessageClass, setCepMessageClass] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [passwordMatch, setPasswordMatch] = useState(true)
+  const [emailValid, setEmailValid] = useState(true)
+  const [emailMessage, setEmailMessage] = useState("")
+  const [passwordMatchMessage, setPasswordMatchMessage] = useState("")
+  const [isCpfInvalid, setIsCpfInvalid] = useState(false)
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
     setValue,
     watch,
+    handleSubmit,
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-  });
+  })
 
-  function onSubmit(values: FormSchema) {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      console.log(values);
-      setSuccessMessage("Cadastro realizado com sucesso!");
-      setIsSubmitting(false);
-      setTimeout(() => setSuccessMessage(""), 3000);
-    }, 1500);
-  }
+  useEffect(() => {
+    if (successMessage) {
+      setShowSuccessMessage(true)
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(false)
+        router.push("/login")
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [successMessage, router])
 
-  async function handleCpfBlur(event: React.FocusEvent<HTMLInputElement>) {
-    const cpf = event.target.value;
+  const onSubmit = async (values: FormSchema) => {
+    setIsSubmitting(true)
     try {
-      const message = await handleCpfVerify(cpf);
-      setSubmitMessage(message);
-      const isInvalid = message.includes("CPF inválido");
-      setIsCpfInvalid(isInvalid);
-      setCpfMessageClass(isInvalid ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800");
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password)
+      const user = userCredential.user
+
+      await setDoc(doc(db, "clientes", user.uid), {
+        fullName: values.fullName,
+        email: values.email,
+        cpf: values.cpf,
+        phoneNumber: values.phoneNumber,
+        address: values.address,
+        city: values.city,
+        state: values.state,
+        zipCode: values.zipCode,
+        number: values.number,
+        complement: values.complement,
+      })
+
+      setSuccessMessage("Cadastro realizado com sucesso! Redirecionando para a página de login...")
     } catch (error) {
-      setSubmitMessage("Erro ao verificar CPF.");
-      setIsCpfInvalid(true);
-      setCpfMessageClass("bg-red-100 text-red-800");
+      console.error("Error during registration:", error)
+      setSubmitMessage("Erro ao realizar o cadastro. Por favor, tente novamente.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  async function handleEmailBlur(event: React.FocusEvent<HTMLInputElement>) {
-    const email = event.target.value;
-    const isValid = isValidEmail(email);
+  const handleCpfBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
+    const cpf = event.target.value
+    try {
+      const message = await handleCpfVerify(cpf)
+      setSubmitMessage(message)
+      const isInvalid = message.includes("CPF inválido")
+      setIsCpfInvalid(isInvalid)
+      setCpfMessageClass(isInvalid ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800")
+    } catch (error) {
+      setSubmitMessage("Erro ao verificar CPF.")
+      setIsCpfInvalid(true)
+      setCpfMessageClass("bg-red-100 text-red-800")
+    }
+  }
+
+  const handleEmailBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const email = event.target.value
+    const isValid = isValidEmail(email)
 
     if (!isValid) {
-      setEmailValid(false);
-      setEmailMessage("Por favor, insira um e-mail válido.");
+      setEmailValid(false)
+      setEmailMessage("Por favor, insira um e-mail válido.")
     } else {
-      setEmailValid(true);
-      setEmailMessage("E-mail válido.");
+      setEmailValid(true)
+      setEmailMessage("E-mail válido.")
     }
   }
 
-  async function handleCepBlur(event: React.FocusEvent<HTMLInputElement>) {
-    const cep = event.target.value;
+  const handleCepBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
+    const cep = event.target.value
     try {
-      const data = await handleCepVerify(cep);
+      const data = await handleCepVerify(cep)
       if (isCepData(data)) {
-        setValue("address", data.logradouro || "");
-        setValue("city", data.localidade || "");
-        setValue("state", data.uf || "");
-        setSubmitMessage("CEP válido");
-        setCepMessageClass("bg-green-100 text-green-800");
+        setValue("address", data.logradouro || "")
+        setValue("city", data.localidade || "")
+        setValue("state", data.uf || "")
+        setSubmitMessage("CEP válido")
+        setCepMessageClass("bg-green-100 text-green-800")
       } else {
-        setSubmitMessage("Ocorreu um erro ao buscar o CEP.");
-        setCepMessageClass("bg-red-100 text-red-800");
+        setSubmitMessage("Ocorreu um erro ao buscar o CEP.")
+        setCepMessageClass("bg-red-100 text-red-800")
       }
     } catch (error) {
-      setSubmitMessage("Ocorreu um erro ao buscar o CEP.");
-      setCepMessageClass("bg-red-100 text-red-800");
+      setSubmitMessage("Ocorreu um erro ao buscar o CEP.")
+      setCepMessageClass("bg-red-100 text-red-800")
     }
   }
 
-  const password = watch("password");
-  const confirmPassword = watch("confirmPassword");
+  const password = watch("password")
+  const confirmPassword = watch("confirmPassword")
 
   useEffect(() => {
     if (password && confirmPassword) {
-      const doPasswordsMatch = password === confirmPassword;
-      setPasswordMatch(doPasswordsMatch);
-      setPasswordMatchMessage(doPasswordsMatch ? "Senhas coincidem" : "As senhas não coincidem");
+      const doPasswordsMatch = password === confirmPassword
+      setPasswordMatch(doPasswordsMatch)
+      setPasswordMatchMessage(doPasswordsMatch ? "Senhas coincidem" : "As senhas não coincidem")
     } else {
-      setPasswordMatchMessage("");
+      setPasswordMatchMessage("")
     }
-  }, [password, confirmPassword]);
+  }, [password, confirmPassword])
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden mt-36 p-6">
-      {successMessage && (
-        <div className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-md">
-          {successMessage}
-        </div>
-      )}
+      <AnimatePresence>
+        {showSuccessMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.5 }}
+            className="fixed top-4 right-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-md"
+          >
+            {successMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="bg-pink-500 text-white p-6">
         <h2 className="text-2xl font-bold">Cadastro de Cliente</h2>
         <p className="text-pink-100">Crie sua conta para começar a comprar</p>
@@ -123,7 +167,7 @@ export default function CustomerRegistration() {
           emailValid={emailValid}
           emailMessage={emailMessage}
           handleCpfBlur={handleCpfBlur}
-          handleEmailBlur={handleEmailBlur} // Passando a função de validação de e-mail
+          handleEmailBlur={handleEmailBlur}
           submitMessage={submitMessage}
           cpfMessageClass={isCpfInvalid ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}
         />
@@ -167,5 +211,6 @@ export default function CustomerRegistration() {
         </div>
       </form>
     </div>
-  );
+  )
 }
+

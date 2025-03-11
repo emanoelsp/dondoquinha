@@ -2,17 +2,12 @@
 
 import { useState } from 'react'
 import {
-  BarChart,
   Bell,
   Box,
   ChevronDown,
-  DollarSign,
   LineChart,
-  Package,
   Search,
   ShoppingBag,
-  ShoppingCart,
-  Tag,
   Truck,
   Users,
 } from 'lucide-react'
