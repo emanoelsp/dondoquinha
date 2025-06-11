@@ -36,7 +36,7 @@ const categories = [
 ]
 
 export default function ProductListing() {
-  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [products] = useState<Product[]>(initialProducts)
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100])
   const [selectedColor, setSelectedColor] = useState<string>('')

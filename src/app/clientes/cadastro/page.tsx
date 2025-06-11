@@ -21,7 +21,6 @@ export default function CustomerRegistration() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("")
-  const [cpfMessageClass, setCpfMessageClass] = useState("")
   const [cepMessageClass, setCepMessageClass] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
@@ -72,8 +71,8 @@ export default function CustomerRegistration() {
       })
 
       setSuccessMessage("Cadastro realizado com sucesso! Redirecionando para a página de login...")
-    } catch (error) {
-      console.error("Error during registration:", error)
+    } catch {
+      console.error("Error during registration")
       setSubmitMessage("Erro ao realizar o cadastro. Por favor, tente novamente.")
     } finally {
       setIsSubmitting(false)
@@ -87,11 +86,9 @@ export default function CustomerRegistration() {
       setSubmitMessage(message)
       const isInvalid = message.includes("CPF inválido")
       setIsCpfInvalid(isInvalid)
-      setCpfMessageClass(isInvalid ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800")
-    } catch (error) {
+    } catch {
       setSubmitMessage("Erro ao verificar CPF.")
       setIsCpfInvalid(true)
-      setCpfMessageClass("bg-red-100 text-red-800")
     }
   }
 
@@ -122,7 +119,7 @@ export default function CustomerRegistration() {
         setSubmitMessage("Ocorreu um erro ao buscar o CEP.")
         setCepMessageClass("bg-red-100 text-red-800")
       }
-    } catch (error) {
+    } catch {
       setSubmitMessage("Ocorreu um erro ao buscar o CEP.")
       setCepMessageClass("bg-red-100 text-red-800")
     }
@@ -213,4 +210,3 @@ export default function CustomerRegistration() {
     </div>
   )
 }
-

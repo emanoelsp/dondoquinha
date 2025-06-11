@@ -72,7 +72,7 @@ export default function ContactSection() {
                         <div className="space-y-2">
                             <div>
                                 <h2 className="font-semibold">Como posso rastrear meu pedido?</h2>
-                                <span className="text-sm">Acesse "Histórico de Pedidos" após fazer login.</span>
+                                <span className="text-sm">Acesse Histórico de Pedidos após fazer login.</span>
                             </div>
                             <div>
                                 <h2 className="font-semibold">Qual é a política de devolução?</h2>

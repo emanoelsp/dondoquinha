@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 
 // Definindo a interface para uma categoria
 interface Category {
@@ -92,7 +93,21 @@ export default function CategoryManagement() {
                 </button>
               </div>
             </div>
-            <img src={category.image || '/placeholder.svg'} alt={category.name} className="w-full h-40 object-cover rounded mt-2" />
+
+            <Image
+              src={category.image || '/placeholder.svg'}
+              alt={category.name}
+              width={100}
+              height={100}
+              className="mb-2 rounded"
+              onError={() => setNewCategory(prev => ({ ...prev, image: '/placeholder.svg' }))}
+            />
+
+            <div className="text-sm text-gray-500">
+              ID: {category.id} | Nome: {category.name} | Imagem: {category.image ? 'Carregada' : 'Nenhuma imagem'}   
+            </div>  
+
+           
           </div>
         ))}
       </div>

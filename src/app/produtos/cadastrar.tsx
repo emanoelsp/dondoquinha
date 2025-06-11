@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PlusCircle, Pencil, Trash2, Image as ImageIcon } from 'lucide-react'
+import Image from 'next/image'
 
 interface Product {
   id: number;
@@ -28,9 +29,9 @@ export default function ProductManagement() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setNewProduct(prev => ({ 
-      ...prev, 
-      [name]: name.includes('Price') ? parseFloat(value) || 0 : value 
+    setNewProduct(prev => ({
+      ...prev,
+      [name]: name.includes('Price') ? parseFloat(value) || 0 : value
     }))
   }
 
@@ -59,10 +60,10 @@ export default function ProductManagement() {
   }
 
   return (
-    
+
     <div className="container mx-auto p-6 space-y-8">
       <h1 className="text-3xl font-extrabold text-pink-500 mb-6">Gerenciar Produtos</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-lg">
         <div>
           <label htmlFor="name" className="text-sm text-gray-700">Nome do Produto</label>
@@ -134,7 +135,15 @@ export default function ProductManagement() {
         {newProduct.images.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-4">
             {newProduct.images.map((image, index) => (
-              <img key={index} src={image} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
+              <Image
+                key={index}
+                src={image}
+                alt={`Preview ${index + 1}`}
+                width={100}
+                height={100}
+                className="w-full h-24 object-cover rounded-md"
+                onError={() => setNewProduct(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))}
+              />
             ))}
           </div>
         )}
@@ -165,7 +174,15 @@ export default function ProductManagement() {
             {product.images.length > 0 ? (
               <div className="grid grid-cols-3 gap-2">
                 {product.images.map((image, index) => (
-                  <img key={index} src={image} alt={`${product.name} - ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
+                  <Image
+                    key={index}
+                    src={image}
+                    alt={`Product Image ${index + 1}`}
+                    width={100}
+                    height={100}
+                    className="w-full h-24 object-cover rounded-md"
+                    onError={() => setProducts(prev => prev.map(p => p.id === product.id ? { ...p, images: p.images.filter((_, i) => i !== index) } : p))}
+                  />
                 ))}
               </div>
             ) : (

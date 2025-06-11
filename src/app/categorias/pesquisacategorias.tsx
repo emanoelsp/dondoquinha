@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { Search, Image as ImageIcon } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
 const categories = [
@@ -16,13 +16,13 @@ const categories = [
 
 export default function CategoriesAndSearch() {
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({})
-  const [imagePaths, setImagePaths] = useState<string[]>([])
+  // const [imagePaths, setImagePaths] = useState<string[]>([])
 
-  useEffect(() => {
-    const paths = categories.map(category => category.image)
-    setImagePaths(paths)
-    console.log('Caminhos das imagens:', paths)
-  }, [])
+  // useEffect(() => {
+  //   const paths = categories.map(category => category.image)
+  //   setImagePaths(paths)
+  //   console.log('Caminhos das imagens:', paths)
+  // }, [])
 
   const handleImageError = (categoryName: string) => {
     setImageError(prev => ({ ...prev, [categoryName]: true }))

@@ -15,7 +15,6 @@ interface AddressFormProps {
 export const AddressForm: React.FC<AddressFormProps> = ({
   register,
   errors,
-  setValue,
   handleCepBlur,
   submitMessage,
   cepMessageClass,

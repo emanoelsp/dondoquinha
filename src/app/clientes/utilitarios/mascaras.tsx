@@ -34,7 +34,14 @@ export type CepData = {
   uf: string
 }
 
-export function isCepData(data: any): data is CepData {
-  return typeof data === "object" && data !== null && "logradouro" in data
+export function isCepData(data: unknown): data is CepData {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "logradouro" in data &&
+    "localidade" in data &&
+    "uf" in data
+  )
 }
+
 

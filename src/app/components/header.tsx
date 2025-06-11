@@ -116,7 +116,7 @@ export default function Header() {
                   </Link>
                   <span className="text-pink-600">|</span>
                 </motion.div>
-                
+
                 <div
                   className="relative flex items-center"
                   onMouseEnter={() => setIsSearchExpanded(true)}
@@ -160,13 +160,14 @@ export default function Header() {
           </Link>
           <nav className="hidden md:block">
             <ul className="text-lg flex space-x-6">
-              {["Início", "Coleção", "Acessórios", "Outlet", "Kits", "Avaliações", "Contatos"].map((item) => (
+              {(["Início", "Coleção", "Acessórios", "Outlet", "Kits", "Avaliações", "Contatos"] as const).map((item) => (
                 <li key={item}>
-                  <button onClick={() => handleNavClick(item as any)} className="hover:text-pink-600 transition-colors">
+                  <button onClick={() => handleNavClick(item)} className="hover:text-pink-600 transition-colors">
                     {item}
                   </button>
                 </li>
               ))}
+
             </ul>
           </nav>
           <div className="flex items-center space-x-4">
